@@ -1,0 +1,21 @@
+
+
+button class="loginButton"
+    h3 login 
+button class="signupButton"
+    h3 signup 
+
+div class="loginScreen hide"
+    form action="/login" method="post"
+        input type="text" name="username" placeholder="username"
+        input type="text" name="password" placeholder="password"
+        input type="submit" value="go"
+
+
+
+div class="signupScreen hide"
+    form action="signup" method="post"
+        input type="text" name="username" placeholder="username"
+        input type="password" name="password" placeholder="password"
+        input type="password" name="password_redo" placeholder="input the password again"
+        input type="submit" value="go"

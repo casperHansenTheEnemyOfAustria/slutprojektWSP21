@@ -1,0 +1,21 @@
+body{
+    display:flex;
+    flex-direction: column;
+    justify-content:center;
+}
+
+.hide{
+    display:none !important;
+}
+
+.loginScreen,.signupScreen{
+    height:50vh;
+    width:50vw;
+    /* margin:auto; */
+    position: absolute;
+    background-color: aquamarine;
+    display: flex;
+    justify-content:center;
+    flex-direction: column;
+}
+
