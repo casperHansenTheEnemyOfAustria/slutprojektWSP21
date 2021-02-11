@@ -4,62 +4,61 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 require 'rails'
+require_relative("./model.rb")
 enable :sessions
 
+salt = "awoogamonke"
 
 
-def new_user(username, password)
-    password_digest = BCrypt::Password.create(password)
-    db = SQLite3::Database.new("db/skolan.db")
-    db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
-end
+
 
 get("/"){
-
     session[:ipAdress] = request.ip
     # logs peoples ip adress for saving usernames
     print "this is your ip adress #{request.ip}"
     slim(:loginScreen)
+}
 
+get("/sucess"){
+  slim(:sucess)
+}
+
+get("/fail"){
+  slim(:fail )
+} 
+
+get("/users/profile_page"){
+  slim(:"users/profile_page")
 }
 
 post("/login"){
     username = params[:username]
-    password = params[:password]
-  
-    db = SQLite3::Database.new("db/skolan.db")
-    db.results_as_hash = true
-    usernames = db.execute("SELECT name FROM users ")
-    p usernames
-    if usernames.include?({"name" => username}) == true
-      info = db.execute("SELECT * FROM users where name = ?", username).first
-      id = info["id"]
-      password_digest = info["pwdigest"]
-      if BCrypt::Password.new(password_digest) == password
+    password = params[:password] + salt
+
+
+      if loginfunc(username, password)
         session[:username] = username
-        session[:id] = id
+        session[:id] = get_id(username)
         session[:loggedIn] = true
-        redirect("users/profilePage")
+        if admin(username)
+          session[:admin] = true
+        end
+        redirect("users/profile_page")
         
       else
         session[:loggedIn] = false
         redirect("/fail")
       end
-    else
-      # for if the username doesnt exist
-      redirect("/fail")
-    end
 }
 
 post("/signup"){
     username = params[:username]
     password = params[:password]
     password_redo = params[:password_redo]
-    db = SQLite3::Database.new("db/skolan.db")
-    db.results_as_hash = true
-    
     if password == password_redo 
+      password = password + salt
       new_user(username, password)
+      redirect("/sucess")
     else
       print "passwords didnt match"
     end
