@@ -2,4 +2,19 @@ h1 Profile Page moment
 
 - if session[:loggedIn] == true
     h2 = "Hello #{session[:username]}"
-    p = "These are your posts"
+    h3 = "These are your posts"
+    div class="userPosts"
+        - if session[:postInfo] != nil
+            - session[:postInfo].each do |post|
+                div class="post"
+                    h4 = "#{post["name"]}"
+                    p = "#{post["content"]}"
+    div class="makePost"
+        form action="/makePost" method="post" 
+            input type="text" name="title" placeholder="title here pwease"
+            input type="text" name="content" placeholder="put sum text here"
+            input type="submit" value="post it!"
+
+- else
+    h2 = "DIE"
+

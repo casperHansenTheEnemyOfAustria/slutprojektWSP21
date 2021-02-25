@@ -11,9 +11,12 @@ html lang="en"
     nav 
       ul 
         li
+          a href="/" Home
+        li
           a href="gurka.se" Postboard 
         li 
-          a  href="users/profile_page" Profilsida
+          -if session[:loggedIn] == true
+            a  href="users/profile_page" Profilsida
         
 
 

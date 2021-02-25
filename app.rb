@@ -28,13 +28,13 @@ get("/fail"){
 } 
 
 get("/users/profile_page"){
+  session[:postInfo] = checkPosts(session[:id])
   slim(:"users/profile_page")
 }
 
 post("/login"){
     username = params[:username]
     password = params[:password] + salt
-
 
       if loginfunc(username, password)
         session[:username] = username
@@ -43,6 +43,8 @@ post("/login"){
         if admin(username)
           session[:admin] = true
         end
+        session[:postInfo] = checkPosts(session[:id])
+        p "look at this #{session[:postInfo]}"
         redirect("users/profile_page")
         
       else
@@ -62,4 +64,13 @@ post("/signup"){
     else
       print "passwords didnt match"
     end
+}
+
+post("/makePost"){
+  name = params[:title]
+  content = params[:content]
+  user_id = session[:id]
+  makePost(name,content,user_id)
+  p "look at this #{session[:postInfo]}"
+  redirect("users/profile_page")
 }

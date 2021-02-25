@@ -43,7 +43,7 @@ end
 def get_id(username)
     db = mk_db()
     db.results_as_hash = true
-    info = db.execute("SELECT * FROM users where name = ?", username).first
+    info = db.execute("SELECT * FROM users WHERE name = ?", username).first
     id = info["id"]
     return id
 end
@@ -59,4 +59,18 @@ def new_user(username, password)
     # else
     #     db.execute("INSERT INTO users (admin?) VALUES ('0')")
     # end
+end
+
+def checkPosts(id)
+    db = mk_db()
+    db.results_as_hash = true
+    postInfo = db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
+    p postInfo
+    return postInfo 
+end
+
+def makePost(name, content, user_id)
+    db = mk_db()
+    db.results_as_hash = true
+    db.execute("INSERT INTO posts (name, content, owner_id) VALUES (?, ?, ?)", name,content, user_id).first
 end
