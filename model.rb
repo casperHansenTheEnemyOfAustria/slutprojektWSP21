@@ -65,7 +65,6 @@ def checkPosts(id)
     db = mk_db()
     db.results_as_hash = true
     postInfo = db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
-    p postInfo
     return postInfo 
 end
 
@@ -73,4 +72,16 @@ def makePost(name, content, user_id)
     db = mk_db()
     db.results_as_hash = true
     db.execute("INSERT INTO posts (name, content, owner_id) VALUES (?, ?, ?)", name,content, user_id).first
+end
+
+def deletePost(id)
+    db = mk_db()
+    db.results_as_hash = true
+    db.execute("DELETE FROM posts WHERE id = ?", id)
+end
+
+def updatePost(id, title, text)
+    db = mk_db()
+    db.results_as_hash = true
+    db.execute("UPDATE posts SET name = ?, content = ? WHERE id = ?", title, text, id)
 end

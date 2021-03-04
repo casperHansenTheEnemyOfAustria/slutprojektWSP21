@@ -4,6 +4,7 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 require 'rails'
+require 'byebug'
 require_relative("./model.rb")
 enable :sessions
 
@@ -20,16 +21,16 @@ get("/"){
 }
 
 get("/sucess"){
-  slim(:sucess)
+  slim(:success)
 }
 
 get("/fail"){
   slim(:fail )
 } 
 
-get("/users/profile_page"){
+get("/users/profilePage"){
   session[:postInfo] = checkPosts(session[:id])
-  slim(:"users/profile_page")
+  slim(:"users/profilePage")
 }
 
 post("/login"){
@@ -44,8 +45,7 @@ post("/login"){
           session[:admin] = true
         end
         session[:postInfo] = checkPosts(session[:id])
-        p "look at this #{session[:postInfo]}"
-        redirect("users/profile_page")
+        redirect("users/profilePage")
         
       else
         session[:loggedIn] = false
@@ -72,5 +72,36 @@ post("/makePost"){
   user_id = session[:id]
   makePost(name,content,user_id)
   p "look at this #{session[:postInfo]}"
-  redirect("users/profile_page")
+  redirect("users/profilePage")
+}
+
+post("/deletePost/:id"){
+  id = params[:id]
+  deletePost(id)
+  redirect("users/profilePage")
+}
+
+get("/editPost/:id"){
+  session[:post_id] = params[:id]
+
+  slim(:"/users/editPost")
+}
+
+post("/editPost"){
+  id = session[:post_id]
+  newName = params[:newTitle]
+  newContent = params[:newContent]
+  # check for empty name square next time
+  # session[:postInfo].each do |post|
+  #   currentName = post["name"]
+  #   currentContent = post["content"]
+  # end
+  # byebug
+  # if newName == nil 
+  #   newName = currentName
+  # elsif newContent == nil
+  #   newContent = currentContent
+  # end
+    updatePost(id, newName, newContent)
+    redirect("users/profilePage")
 }

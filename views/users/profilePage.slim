@@ -9,6 +9,10 @@ h1 Profile Page moment
                 div class="post"
                     h4 = "#{post["name"]}"
                     p = "#{post["content"]}"
+                    form action="/deletePost/#{post["id"]}" method="post"
+                        input type="submit" value="DELETE THAT"
+                    form action="/editPost/#{post["id"]}" method="get" 
+                        input type="submit" value="EDIT THAT"
     div class="makePost"
         form action="/makePost" method="post" 
             input type="text" name="title" placeholder="title here pwease"
@@ -18,3 +22,4 @@ h1 Profile Page moment
 - else
     h2 = "DIE"
 
+ 
