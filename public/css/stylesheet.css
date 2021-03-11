@@ -28,7 +28,6 @@ body{
 .post{
     position: relative;
     background-color: blueviolet;
-    height: 20vh;
     width: 30vw;
     filter: drop-shadow(30px 10px 4px #4444dd);
     margin-top: 5px;
@@ -37,6 +36,10 @@ body{
     justify-content: center;
 
     flex-direction:column;
+}
+
+.mainPost{
+    background:linear-gradient(90deg, rgb(74, 165, 22) 0%, rgb(23, 77, 163) 100%) !important;
 }
 
 .userPosts{
@@ -55,6 +58,13 @@ body{
     padding:5px;
     position: relative;
     filter: drop-shadow(30px 10px 4px #4444dd);
+}
+
+h3{
+    margin-bottom: 6px;
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 2.5em;
+    color:rgba(255,0,24,1)
 }
 
 h4{

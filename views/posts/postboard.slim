@@ -1,3 +1,15 @@
 h2 THIS IS WHERE YOU CAN VIEW EVERYONES POSTS
 
- - 
+div class="userPosts"
+    - if session[:allPosts] != nil
+        - session[:allPosts].each do |post|
+            div class="mainPost post"
+                h3 = "Owner:#{usernameFinder(post["owner_id"])}"
+                h4 = "Title:#{post["name"]}"
+                p = "#{post["content"]}"
+                - if session[:id] == post["owner_id"]
+                    form action="/deletePost/#{post["id"]}" method="post"
+                        input type="submit" value="DELETE THAT"
+                    form action="/editPost/#{post["id"]}" method="get" 
+                        input type="submit" value="EDIT THAT"
+     

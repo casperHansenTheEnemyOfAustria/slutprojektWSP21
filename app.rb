@@ -11,7 +11,7 @@ enable :sessions
 salt = "awoogamonke"
 
 
-
+# login functions
 
 get("/"){
     session[:ipAdress] = request.ip
@@ -28,10 +28,7 @@ get("/fail"){
   slim(:fail )
 } 
 
-get("/users/profilePage"){
-  session[:postInfo] = checkPosts(session[:id])
-  slim(:"users/profilePage")
-}
+
 
 post("/login"){
     username = params[:username]
@@ -53,6 +50,12 @@ post("/login"){
       end
 }
 
+post("/logOut"){
+  session[:loggediIn] = false
+  session[:id] = nil
+  redirect("/")
+}
+
 post("/signup"){
     username = params[:username]
     password = params[:password]
@@ -64,6 +67,13 @@ post("/signup"){
     else
       print "passwords didnt match"
     end
+}
+
+# user functions
+
+get("/users/profilePage"){
+  session[:postInfo] = checkPosts(session[:id])
+  slim(:"users/profilePage")
 }
 
 post("/makePost"){
@@ -103,4 +113,12 @@ post("/editPost"){
   end
     updatePost(id, newName, newContent)
     redirect("users/profilePage")
+}
+
+
+# posts
+
+get("/postboard"){
+  session[:allPosts] = allPosts()
+  slim(:"posts/postboard")
 }

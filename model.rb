@@ -9,7 +9,16 @@ def mkDb()
     return db
 end
 
-def allPosts
+def allPosts()
+    db = mkDb()
+    db.results_as_hash = true 
+    return db.execute("SELECT * FROM POSTS")
+end
+
+def usernameFinder(id)
+    db = mkDb() 
+    return db.execute("SELECT name FROM users WHERE id = ?", id)[0][0]
+end
 
 def loginfunc(username, password)
     db = mkDb()
