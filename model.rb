@@ -4,13 +4,15 @@ require 'sqlite3'
 require 'bcrypt'
 require 'rails'
 enable :sessions
-def mk_db()
+def mkDb()
     db = SQLite3::Database.new("db/skolan.db")
     return db
 end
 
+def allPosts
+
 def loginfunc(username, password)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     usernames = db.execute("SELECT name FROM users ")
     
@@ -29,7 +31,7 @@ def loginfunc(username, password)
 end
 
 def admin(username)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     info = db.execute("SELECT * FROM users where name = ?", username).first
     if info["admin?"] == "1"
@@ -40,18 +42,18 @@ def admin(username)
         
 end
 
-def get_id(username)
-    db = mk_db()
+def getId(username)
+    db = mkDb()
     db.results_as_hash = true
     info = db.execute("SELECT * FROM users WHERE name = ?", username).first
     id = info["id"]
     return id
 end
 
-def new_user(username, password)
+def newUser(username, password)
     admins = ["1"]
     password_digest = BCrypt::Password.create(password)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
     # if admins.include?(username)
@@ -62,26 +64,36 @@ def new_user(username, password)
 end
 
 def checkPosts(id)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
-    postInfo = db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
-    return postInfo 
+    postsInfo = db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
+    return postsInfo 
 end
 
+def checkPost(id)
+    db = mkDb()
+    db.results_as_hash = true
+    postInfo = db.execute("SELECT * FROM posts WHERE id = ?", id)
+    p postInfo
+    return postInfo
+end
+
+
+
 def makePost(name, content, user_id)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     db.execute("INSERT INTO posts (name, content, owner_id) VALUES (?, ?, ?)", name,content, user_id).first
 end
 
 def deletePost(id)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     db.execute("DELETE FROM posts WHERE id = ?", id)
 end
 
 def updatePost(id, title, text)
-    db = mk_db()
+    db = mkDb()
     db.results_as_hash = true
     db.execute("UPDATE posts SET name = ?, content = ? WHERE id = ?", title, text, id)
 end

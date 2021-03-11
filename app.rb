@@ -39,7 +39,7 @@ post("/login"){
 
       if loginfunc(username, password)
         session[:username] = username
-        session[:id] = get_id(username)
+        session[:id] = getId(username)
         session[:loggedIn] = true
         if admin(username)
           session[:admin] = true
@@ -59,7 +59,7 @@ post("/signup"){
     password_redo = params[:password_redo]
     if password == password_redo 
       password = password + salt
-      new_user(username, password)
+      newUser(username, password)
       redirect("/sucess")
     else
       print "passwords didnt match"
@@ -91,17 +91,16 @@ post("/editPost"){
   id = session[:post_id]
   newName = params[:newTitle]
   newContent = params[:newContent]
-  # check for empty name square next time
-  # session[:postInfo].each do |post|
-  #   currentName = post["name"]
-  #   currentContent = post["content"]
-  # end
-  # byebug
-  # if newName == nil 
-  #   newName = currentName
-  # elsif newContent == nil
-  #   newContent = currentContent
-  # end
+  currentName = checkPost(id)[0]["name"]
+  currentContent = checkPost(id)[0]["content"]
+  p newName
+  p newContent
+  if newName == "" 
+    newName = currentName
+  end
+  if newContent == ""
+    newContent = currentContent
+  end
     updatePost(id, newName, newContent)
     redirect("users/profilePage")
 }
