@@ -1,6 +1,7 @@
 body{
     display:flex;
     flex-direction: column;
+    background-color: rgba(113, 113, 196, 0.5);
 }
 
 * {
@@ -10,12 +11,19 @@ body{
     display:none !important;
 }
 
+.fadeLayer{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    z-index: -3;
+}
+
 .loginScreen,.signupScreen{
     height:20vh;
     width:20vw;
     /* margin:auto; */
     position: absolute;
-    background-color: aquamarine;
+    background-color: blueviolet;
     display: flex;
     justify-content:center;
     flex-direction: column;
@@ -27,7 +35,7 @@ body{
 
 .post{
     position: relative;
-    background-color: blueviolet;
+    background: linear-gradient(90deg, blue, red, white );
     width: 30vw;
     filter: drop-shadow(30px 10px 4px #4444dd);
     margin-top: 5px;

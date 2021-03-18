@@ -13,13 +13,12 @@ html lang="en"
         li
           a href="/" Home
         li
-          a href="/postboard" Postboard 
+          a href="/posts/index" Postboard 
         li 
           -if session[:loggedIn] == true
-            a  href="/users/profilePage" Profilsida 
+            a  href="/users/index" Profilsida 
         form action="/logOut" method="post"
           -if session[:loggedIn] == true
-          / todo: fisx this shit
             input type="submit" value="Log Out"
         
 

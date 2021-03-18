@@ -1,2 +1,2 @@
-h1 you failed the login process.
-a href="/" try again 
+h1 = "you failed the #{session[:errorMessage]} process."
+a href="#{session[:errorLink]}" try again 

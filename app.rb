@@ -17,10 +17,10 @@ get("/"){
     session[:ipAdress] = request.ip
     # logs peoples ip adress for saving usernames
     print "this is your ip adress #{request.ip}"
-    slim(:loginScreen)
+    slim(:index)
 }
 
-get("/sucess"){
+get("/success"){
   slim(:success)
 }
 
@@ -42,17 +42,22 @@ post("/login"){
           session[:admin] = true
         end
         session[:postInfo] = checkPosts(session[:id])
-        redirect("users/profilePage")
+        redirect("users/index")
         
       else
         session[:loggedIn] = false
+        session[:errorMessage] = "Login"
+        session[:errorLink]  =  "/"
         redirect("/fail")
       end
 }
 
 post("/logOut"){
   session[:loggediIn] = false
+  session[:loggedIn] = "NO"
   session[:id] = nil
+  session[:username] = nil 
+  session[:password] = nil
   redirect("/")
 }
 
@@ -71,9 +76,9 @@ post("/signup"){
 
 # user functions
 
-get("/users/profilePage"){
+get("/users/index"){
   session[:postInfo] = checkPosts(session[:id])
-  slim(:"users/profilePage")
+  slim(:"users/index")
 }
 
 post("/makePost"){
@@ -82,43 +87,55 @@ post("/makePost"){
   user_id = session[:id]
   makePost(name,content,user_id)
   p "look at this #{session[:postInfo]}"
-  redirect("users/profilePage")
+  redirect("users/index")
 }
 
 post("/deletePost/:id"){
   id = params[:id]
+  session[:successMessage] = "delete a post"
   deletePost(id)
-  redirect("users/profilePage")
+  redirect("/success")
 }
 
 get("/editPost/:id"){
-  session[:post_id] = params[:id]
-
-  slim(:"/users/editPost")
+  session[:postId] = params[:id]
+  id = session[:postId]
+  currentName = checkPost(id)[0]["name"]
+  session[:currentName] = currentName
+  currentContent = checkPost(id)[0]["content"]
+  session[:currentContent] = currentContent
+  slim(:"/posts/edit")
 }
 
 post("/editPost"){
   id = session[:post_id]
   newName = params[:newTitle]
   newContent = params[:newContent]
-  currentName = checkPost(id)[0]["name"]
-  currentContent = checkPost(id)[0]["content"]
+  
   p newName
   p newContent
   if newName == "" 
-    newName = currentName
+    newName = session[:currentName]
+    newContent = session[:currentContent]
+    session[:errorMessage] = "naming"
+    session[:errorLink] = "/users/index"
+    redirect("/fail")
   end
   if newContent == ""
-    newContent = currentContent
+    newName = session[:currentName]
+    newContent = session[:currentContent]
+    session[:errorMessage] = "writing"
+    session[:errorLink] = "/users/index"
+    redirect("/fail")
   end
     updatePost(id, newName, newContent)
-    redirect("users/profilePage")
+    redirect("users/index")
 }
 
 
 # posts
 
-get("/postboard"){
+get("/posts/index"){
   session[:allPosts] = allPosts()
-  slim(:"posts/postboard")
+  slim(:"posts/index")
 }
