@@ -10,10 +10,12 @@ enable :sessions
 
 salt = "awoogamonke"
 
-
 # login functions
 
 get("/"){
+    if session[:loggedIn] == nil
+      session[:loggedIn] = false
+    end
     session[:ipAdress] = request.ip
     # logs peoples ip adress for saving usernames
     print "this is your ip adress #{request.ip}"
@@ -53,8 +55,7 @@ post("/login"){
 }
 
 post("/logOut"){
-  session[:loggediIn] = false
-  session[:loggedIn] = "NO"
+  session[:loggedIn] = false
   session[:id] = nil
   session[:username] = nil 
   session[:password] = nil
@@ -67,10 +68,19 @@ post("/signup"){
     password_redo = params[:password_redo]
     if password == password_redo 
       password = password + salt
-      newUser(username, password)
-      redirect("/sucess")
+      if newUser(username, password)
+        newUser(username, password)
+        session[:successMessage] = "sign up"
+        redirect("/success")
+      else
+        session[:errorMessage] = "making a unique username"
+        session[:errorLink]  =  "/"
+        redirect("/fail")
+      end
     else
-      print "passwords didnt match"
+      session[:errorMessage] = "matching the passwords"
+      session[:errorLink]  =  "/"
+      redirect("/fail")
     end
 }
 
@@ -138,4 +148,20 @@ post("/editPost"){
 get("/posts/index"){
   session[:allPosts] = allPosts()
   slim(:"posts/index")
+}
+
+post("/likePost/:id"){
+  p "swag"
+  postId = params[:id]
+  userId = session[:id]
+  likePost(userId, postId)
+  redirect("/posts/index")
+}
+
+post("/unlikePost/:id"){
+  p "swag"
+  postId = params[:id]
+  userId = session[:id]
+  unlikePost(userId, postId)
+  redirect("/posts/index")
 }

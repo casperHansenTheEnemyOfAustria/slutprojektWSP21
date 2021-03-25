@@ -60,16 +60,26 @@ def getId(username)
 end
 
 def newUser(username, password)
-    admins = ["1"]
-    password_digest = BCrypt::Password.create(password)
     db = mkDb()
     db.results_as_hash = true
-    db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
-    # if admins.include?(username)
-    #     db.execute("INSERT INTO users (admin?) VALUES ('1')")
-    # else
-    #     db.execute("INSERT INTO users (admin?) VALUES ('0')")
-    # end
+    usernames = db.execute("SELECT name FROM users ")
+    
+    
+    if !usernames.include?({"name" => username}) 
+        admins = ["1"]
+        password_digest = BCrypt::Password.create(password)
+        db = mkDb()
+        db.results_as_hash = true
+        db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
+        # if admins.include?(username)
+        #     db.execute("INSERT INTO users (admin?) VALUES ('1')")
+        # else
+        #     db.execute("INSERT INTO users (admin?) VALUES ('0')")
+        # end
+        return true
+    else
+        return false
+    end
 end
 
 def checkPosts(id)
@@ -105,4 +115,37 @@ def updatePost(id, title, text)
     db = mkDb()
     db.results_as_hash = true
     db.execute("UPDATE posts SET name = ?, content = ? WHERE id = ?", title, text, id)
+end
+
+def likePost(userId, postId)
+    db = mkDb()
+    db.results_as_hash = true
+    p "#{userId} likes #{postId}"
+    db.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", userId, postId).first
+end
+
+def unlikePost(userId, postId)
+    db = mkDb()
+    db.results_as_hash = true
+    db.execute("DELETE FROM likes WHERE post_id = ? AND user_id = ? ", postId, userId).first
+end
+
+def findLikes(userId, postId)
+    postId = postId.to_i
+    db = mkDb()
+    
+     allLikes = db.execute("SELECT post_id FROM likes WHERE user_id = ?", userId)
+    
+    if allLikes != nil
+        p "all likes are #{allLikes}"
+        p allLikes.include?([postId])
+        if allLikes.include?([postId])
+            p "this is true"
+            return true
+        else 
+            return false
+        end
+    else
+        return false
+    end
 end

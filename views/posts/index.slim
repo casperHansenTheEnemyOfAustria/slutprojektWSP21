@@ -8,7 +8,18 @@ div class="userPosts"
                 h4 = "Title:#{post["name"]}"
                 p = "#{post["content"]}"
                 - if session[:id] == post["owner_id"]
-                
-                    form action="/editPost/#{post["id"]}" method="get" 
-                        input type="submit" value="EDIT THAT"
+                        form action="/editPost/#{post["id"]}" method="get" 
+                            input type="submit" value="EDIT THAT"
+                - else 
+                    - p 
+                    - if session[:loggedIn]
+                        - if findLikes(session[:id], post["id"]) == false
+                            form  action="/likePost/#{post["id"]}" method="post"
+                                input type="submit" value="I LIKE :)"
+                            
+                        - else 
+                            form  action="/unlikePost/#{post["id"]}" method="post"
+                                input type="submit" value="I DOnte LIKE :("
+                            img src="../img/thumbsUp.png" class="thumbsUp"
+
      

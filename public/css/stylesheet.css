@@ -86,3 +86,10 @@ p{
     margin-top: 1px;
     margin-bottom: 7px;
 }
+
+.thumbsUp{
+    position:absolute;
+    width: 14vw;
+    filter: url('#teal-white') brightness(1.9);
+    z-index: -5;
+}
