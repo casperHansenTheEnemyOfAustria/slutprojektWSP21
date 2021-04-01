@@ -4,7 +4,8 @@ div class="userPosts"
     - if session[:allPosts] != nil
         - session[:allPosts].each do |post|
             div class="mainPost post"
-                h3 = "Owner:#{usernameFinder(post["owner_id"])}"
+                h3 
+                    a href='../show/#{usernameFinder(post["owner_id"])}' Owner:#{usernameFinder(post["owner_id"])}
                 h4 = "Title:#{post["name"]}"
                 p = "#{post["content"]}"
                 - if session[:id] == post["owner_id"]
@@ -12,6 +13,7 @@ div class="userPosts"
                             input type="submit" value="EDIT THAT"
                 - else 
                     - p 
+                    -session[:redirectLink] = "/posts/index"
                     - if session[:loggedIn]
                         - if findLikes(session[:id], post["id"]) == false
                             form  action="/likePost/#{post["id"]}" method="post"

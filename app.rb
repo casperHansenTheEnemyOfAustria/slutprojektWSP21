@@ -155,7 +155,7 @@ post("/likePost/:id"){
   postId = params[:id]
   userId = session[:id]
   likePost(userId, postId)
-  redirect("/posts/index")
+  redirect(session[:redirectLink])
 }
 
 post("/unlikePost/:id"){
@@ -163,5 +163,12 @@ post("/unlikePost/:id"){
   postId = params[:id]
   userId = session[:id]
   unlikePost(userId, postId)
-  redirect("/posts/index")
+  redirect(session[:redirectLink])
+}
+
+get("/show/:user"){
+  user = params[:user]
+  posts = checkPosts(getId(user))
+  slim(:"users/show", :locals=>{ posts: posts, 
+  user: user})
 }

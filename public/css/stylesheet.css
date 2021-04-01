@@ -89,7 +89,7 @@ p{
 
 .thumbsUp{
     position:absolute;
-    width: 14vw;
+    width: 12vw;
     filter: url('#teal-white') brightness(1.9);
     z-index: -5;
 }
