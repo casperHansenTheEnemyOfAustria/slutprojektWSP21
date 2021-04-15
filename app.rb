@@ -10,53 +10,60 @@ enable :sessions
 
 salt = "awoogamonke"
 
+include Model
 # login functions
 
+# Displays landing page
 
-# homepage
 get("/"){
     if session[:loggedIn] == nil
       session[:loggedIn] = false
     end
     session[:ipAdress] = request.ip
-    # logs peoples ip adress for saving usernames
+    # Logs peoples ip adress for saving usernames
     print "this is your ip adress #{request.ip}"
     slim(:index)
 }
 
-# used to show different sucessmessages depeding on what happened
+# Displays custom success messages
+#
 get("/success"){
   slim(:success)
 }
 
-# used to show various fail messages depeding on the situation
+# Displays custom fail messages
+#
 get("/fail"){
   slim(:fail )
 } 
 
-# used to log in
+# Logs user in
+#
+# @param [String] username
+# @param [String] password
+# @see Model#loginFunc
 post("/login"){
     username = params[:username]
     password = params[:password] + salt
 
-      if loginfunc(username, password)
-        # sets the session username to the correct ones for further use
+      if loginFunc(username, password)
+        # Sets the session username to the correct ones for further use
         session[:username] = username
-        # finds the id
+        # Finds the id
         session[:id] = getId(username)
-        # makes sure the site knows youre logged in
+        # Makes sure the site knows youre logged in
         session[:loggedIn] = true
 
-        # checks for admin priviliges
+        # Checks for admin priviliges
         if admin(username)
           session[:admin] = true
         end
-        # gets all the user posts and their info
+        # Gets all the user posts and their info
         session[:postInfo] = checkPosts(session[:id])
         redirect("users/index")
         
       else
-        # makes sure it doesnt think youre logged in
+        # Makes sure it doesnt think youre logged in
         session[:loggedIn] = false
         session[:errorMessage] = "Login"
         session[:errorLink]  =  "/"
@@ -64,7 +71,8 @@ post("/login"){
       end
 }
 
-# logs out user
+# Logs out user
+#
 post("/logOut"){
   session[:loggedIn] = false
   session[:id] = nil
@@ -73,7 +81,11 @@ post("/logOut"){
   redirect("/")
 }
 
-used to signup
+# Used to signup
+#
+# @param [String] username
+# @param [String] password
+# @see Model#newUser
 post("/signup"){
     username = params[:username]
     password = params[:password]
@@ -99,13 +111,19 @@ post("/signup"){
 
 # user functions
 
+# User startpage
+#
+# @see Model#checkPosts
 get("/users/index"){
   # sends all the posts of a suer to a session cookie and redirect them to the profile page
   session[:postInfo] = checkPosts(session[:id])
   slim(:"users/index")
 }
 
-# for when you want to view another user
+# Views another user
+#
+# @param [String] user
+# @see Model#checkPosts
 get("/show/:user"){
   user = params[:user]
   # ches for all the user info
@@ -116,17 +134,23 @@ get("/show/:user"){
 
 # posts
 
-# makes posts
+# Makes posts
+#
+# @param [String] title
+# @param [String] content
+# @see Model#makePost
 post("/makePost"){
   name = params[:title]
   content = params[:content]
   user_id = session[:id]
   makePost(name,content,user_id)
-  p "look at this #{session[:postInfo]}"
   redirect("users/index")
 }
 
-# deletes posts
+# Deletes posts
+#
+# @param [String] id
+# @see Model#deletePost
 post("/deletePost/:id"){
   id = params[:id]
   session[:successMessage] = "delete a post"
@@ -134,27 +158,32 @@ post("/deletePost/:id"){
   redirect("/success")
 }
 
-# edits posts
+# Edits posts
+#
+# @param [String] id
+# @see Model#checkPost
 get("/editPost/:id"){
   session[:postId] = params[:id]
   id = session[:postId]
+  
   currentName = checkPost(id)[0]["name"]
-  # sets current name and content to add if empty boxes are left
+  # Sets current name and content to add if empty boxes are left
   session[:currentName] = currentName
   currentContent = checkPost(id)[0]["content"]
   session[:currentContent] = currentContent
   slim(:"/posts/edit")
 }
 
-# for the post form
+# Edits post in db
+#
+# @param [String] newTitle
+# @param [String] newContent
+# @see Model#updatePost
 post("/editPost"){
-  id = session[:post_id]
+  id = session[:postId]
   newName = params[:newTitle]
   newContent = params[:newContent]
-  
-  p newName
-  p newContent
-  # checks if new name or content is empty and adds an error message if true. Also reverts to current name and text etc etc
+  # Checks if new name or content is empty and adds an error message if true. Also reverts to current name and text etc etc
   if newName == "" 
     newName = session[:currentName]
     newContent = session[:currentContent]
@@ -173,24 +202,30 @@ post("/editPost"){
     redirect("users/index")
 }
 
-# for the posts page where all user posts are shown
+# Homepage for viewing posts
+#
+# @see Model#allPosts
 get("/posts/index"){
   session[:allPosts] = allPosts()
   slim(:"posts/index")
 }
 
-# likes post
+# Likes post
+#
+# @param [String] id
+# @see Model#likePost
 post("/likePost/:id"){
-  p "swag"
   postId = params[:id]
   userId = session[:id]
   likePost(userId, postId)
   redirect(session[:redirectLink])
 }
 
-# unlikes post
+# Unlikes post
+#
+# @param [String] id
+# @see Model#unlikePost
 post("/unlikePost/:id"){
-  p "swag"
   postId = params[:id]
   userId = session[:id]
   unlikePost(userId, postId)
