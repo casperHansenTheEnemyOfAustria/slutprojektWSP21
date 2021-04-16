@@ -5,7 +5,7 @@ h1 Profile Page moment
     h3 = "These are your posts"
     div class="userPosts"
         - if session[:postInfo] != nil
-            - session[:postInfo].each do |post|
+            - session[:postInfo].reverse_each do |post|
                 div class="post"
                     h4 = "#{post["name"]}"
                     p = "#{post["content"]}"

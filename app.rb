@@ -14,7 +14,7 @@ include Model
 # login functions
 
 # Displays landing page
-
+#
 get("/"){
     if session[:loggedIn] == nil
       session[:loggedIn] = false
@@ -143,6 +143,16 @@ post("/makePost"){
   name = params[:title]
   content = params[:content]
   user_id = session[:id]
+  if name == "" 
+    session[:errorMessage] = "naming"
+    session[:errorLink] = "/users/index"
+    redirect("/fail")
+  end
+  if content == ""
+    session[:errorMessage] = "writing"
+    session[:errorLink] = "/users/index"
+    redirect("/fail")
+  end
   makePost(name,content,user_id)
   redirect("users/index")
 }
