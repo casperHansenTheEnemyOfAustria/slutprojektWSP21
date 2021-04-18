@@ -10,12 +10,17 @@ enable :sessions
 
 salt = "awoogamonke"
 
+
+
 include Model
+
 # login functions
 
 # Displays landing page
 #
 get("/"){
+    session[:time] = ""
+    session[:message] = ""
     if session[:loggedIn] == nil
       session[:loggedIn] = false
     end
@@ -24,7 +29,7 @@ get("/"){
     print "this is your ip adress #{request.ip}"
     slim(:index)
 }
-
+attempts = 0
 # Displays custom success messages
 #
 get("/success"){
@@ -43,32 +48,45 @@ get("/fail"){
 # @param [String] password
 # @see Model#loginFunc
 post("/login"){
+    if session[:tooMany] == false
+      p "reset attempts"
+      attempts = 0 
+      session[:tooMany] = nil
+    end
     username = params[:username]
     password = params[:password] + salt
+    p "running login function"
+    if loginFunc(username, password)
+      p "managed to log in "
+      # Sets the session username to the correct ones for further use
+      session[:username] = username
+      # Finds the id
+      session[:id] = getId(username)
+      # Makes sure the site knows youre logged in
+      session[:loggedIn] = true
 
-      if loginFunc(username, password)
-        # Sets the session username to the correct ones for further use
-        session[:username] = username
-        # Finds the id
-        session[:id] = getId(username)
-        # Makes sure the site knows youre logged in
-        session[:loggedIn] = true
-
-        # Checks for admin priviliges
-        if admin(username)
-          session[:admin] = true
-        end
-        # Gets all the user posts and their info
-        session[:postInfo] = checkPosts(session[:id])
-        redirect("users/index")
-        
-      else
-        # Makes sure it doesnt think youre logged in
-        session[:loggedIn] = false
-        session[:errorMessage] = "Login"
-        session[:errorLink]  =  "/"
-        redirect("/fail")
+      # Checks for admin priviliges
+      if admin(username)
+        session[:admin] = true
       end
+      # Gets all the user posts and their info
+      session[:postInfo] = checkPosts(session[:id])
+      redirect("users/index")
+          
+    else
+      # Makes sure it doesnt think youre logged in
+      session[:loggedIn] = false
+      session[:errorMessage] = "Login"
+      session[:errorLink]  =  "/"
+      attempts +=1
+      if attempts >= 10
+        p "too many attempt"
+        session[:errorMessage2] = "please wait 30"
+        session[:tooMany] = true
+      end
+      redirect("/fail")
+    end
+      
 }
 
 # Logs out user
@@ -139,7 +157,7 @@ get("/show/:user"){
 # @param [String] title
 # @param [String] content
 # @see Model#makePost
-post("/makePost"){
+post("/post/new"){
   name = params[:title]
   content = params[:content]
   user_id = session[:id]
@@ -161,7 +179,7 @@ post("/makePost"){
 #
 # @param [String] id
 # @see Model#deletePost
-post("/deletePost/:id"){
+post("/post/:id/delete"){
   id = params[:id]
   session[:successMessage] = "delete a post"
   deletePost(id)
@@ -172,7 +190,7 @@ post("/deletePost/:id"){
 #
 # @param [String] id
 # @see Model#checkPost
-get("/editPost/:id"){
+get("/post/:id/edit"){
   session[:postId] = params[:id]
   id = session[:postId]
   
@@ -189,7 +207,7 @@ get("/editPost/:id"){
 # @param [String] newTitle
 # @param [String] newContent
 # @see Model#updatePost
-post("/editPost"){
+post("/post/update"){
   id = session[:postId]
   newName = params[:newTitle]
   newContent = params[:newContent]
@@ -198,18 +216,18 @@ post("/editPost"){
     newName = session[:currentName]
     newContent = session[:currentContent]
     session[:errorMessage] = "naming"
-    session[:errorLink] = "/users/index"
+    
     redirect("/fail")
   end
   if newContent == ""
     newName = session[:currentName]
     newContent = session[:currentContent]
     session[:errorMessage] = "writing"
-    session[:errorLink] = "/users/index"
+    
     redirect("/fail")
   end
     updatePost(id, newName, newContent)
-    redirect("users/index")
+    redirect(session[:redirectLink])
 }
 
 # Homepage for viewing posts
@@ -224,7 +242,7 @@ get("/posts/index"){
 #
 # @param [String] id
 # @see Model#likePost
-post("/likePost/:id"){
+post("/post/:id/like"){
   postId = params[:id]
   userId = session[:id]
   likePost(userId, postId)
@@ -235,7 +253,7 @@ post("/likePost/:id"){
 #
 # @param [String] id
 # @see Model#unlikePost
-post("/unlikePost/:id"){
+post("/post/:id/unlike"){
   postId = params[:id]
   userId = session[:id]
   unlikePost(userId, postId)
