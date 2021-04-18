@@ -21,5 +21,8 @@ div class="fadeLayer"
         h3 login 
     button class="signupButton"
         h3 signup 
-
+/ - if session[:tooMany] == true
+/     - sleep 30
+/     - session[:tooMany] = false 
+    
 

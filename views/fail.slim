@@ -1,2 +1,8 @@
 h1 = "you failed the #{session[:errorMessage]} process."
-a href="#{session[:errorLink]}" try again 
+h2 = "#{session[:errorMessage2]}"
+
+
+- if session[:tooMany] == true
+    a class="tooMany hide" href="#{session[:errorLink]}" try again 
+- else
+    a href="#{session[:errorLink]}" try again
