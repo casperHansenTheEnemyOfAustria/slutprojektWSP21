@@ -7,11 +7,13 @@ h3 here are their posts
     div class="mainPost post"
         h4 = "#{post["name"]}"
         p = "#{post["content"]}"
+        / enables editing for owners and admins
         - if session[:id] == post["owner_id"] || session[:admin]
             form action="/post/#{post["id"]}/edit" method="get" 
                 input type="submit" value="EDIT THAT"
         - if session[:id] != post["owner_id"] || session[:admin]
             - p 
+            / enables likin
             - if session[:loggedIn]
                 - if findLikes(session[:id], post["id"]) == false
                     form  action="/post/#{post["id"]}/like" method="post"

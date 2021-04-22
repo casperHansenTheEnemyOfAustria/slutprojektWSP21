@@ -10,7 +10,7 @@ html lang="en"
     h1 Welcome to sKoLaN
     nav 
       ul 
-
+          / checks so too many login attempts havent been made
         - if session[:tooMany] != true
           li
             a href="/" Home

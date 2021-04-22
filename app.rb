@@ -7,7 +7,12 @@ require 'rails'
 require 'byebug'
 require_relative("./model.rb")
 enable :sessions
+#password salt
+#
 salt = "awoogamonke"
+
+#login attempt counter
+#
 attempts = 0
 
 include Model
