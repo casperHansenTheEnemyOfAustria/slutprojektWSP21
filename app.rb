@@ -7,6 +7,7 @@ require 'rails'
 require 'byebug'
 require_relative("./model.rb")
 enable :sessions
+
 #password salt
 #
 salt = "awoogamonke"
@@ -34,24 +35,9 @@ get("/"){
     slim(:index)
 }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-# initiates login attempts
-attempts = 0
 
->>>>>>> Stashed changes
-=======
-# initiates login attempts
-attempts = 0
 
->>>>>>> Stashed changes
-=======
-# initiates login attempts
-attempts = 0
 
->>>>>>> Stashed changes
 # Displays custom success messages
 #
 get("/success"){
@@ -77,6 +63,7 @@ post("/login"){
     end
     username = params[:username]
     password = params[:password] + salt
+    p password
     p "running login function"
     if loginFunc(username, password)
       p "managed to log in "
@@ -90,6 +77,8 @@ post("/login"){
       # Checks for admin priviliges
       if admin(username)
         session[:admin] = true
+      else
+        session[:admin] == false
       end
       # Gets all the user posts and their info
       session[:postInfo] = checkPosts(session[:id])
@@ -104,27 +93,12 @@ post("/login"){
       attempts +=1
       # checks if attempts are over limit
       if attempts >= 10
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
         p "too many attempt"
         session[:errorMessage2] = "please wait 30 seconds"
         # too many is set as a check var for if too many login attempts have been made
-=======
         session[:errorMessage] = "Not making too many attempts"
         p "too many attempts"
-        session[:errorMessage2] = "please wait 30 seconds"
->>>>>>> Stashed changes
-=======
-        session[:errorMessage] = "Not making too many attempts"
-        p "too many attempts"
-        session[:errorMessage2] = "please wait 30 seconds"
->>>>>>> Stashed changes
-=======
-        session[:errorMessage] = "Not making too many attempts"
-        p "too many attempts"
-        session[:errorMessage2] = "please wait 30 seconds"
->>>>>>> Stashed changes
         session[:tooMany] = true
       end
       redirect("/fail")
@@ -151,36 +125,34 @@ post("/signup"){
     username = params[:username]
     password = params[:password]
     password_redo = params[:password_redo]
+    session[:errorLink]  =  "/"
     # checks for password redos
-    if password == password_redo && password != "" && username != ""
-      # password = password + salt adds salt
+    if password == password_redo && password != "" && username != "" && password.length >= 8 && password =~ /[0-9]/
+      password = password + salt 
+      # adds salt
       if newUser(username, password)
-        newUser(username, password)
         session[:successMessage] = "sign up"
-        # Sets the session username to the correct ones for further use
-        session[:username] = username
-        # Finds the id
-        session[:id] = getId(username)
-        # Makes sure the site knows youre logged in
-        session[:loggedIn] = true
+        session[:redirectLink] = "/"
         redirect("/success")
 
       else
         session[:errorMessage] = "making a unique username"
-        session[:errorLink]  =  "/"
         redirect("/fail")
       end
     elsif username == ""
       session[:errorMessage] = "not leaving the username blank"
-      session[:errorLink]  =  "/"
       redirect("/fail")
     elsif password == ""
       session[:errorMessage] = "not leaving the password blank"
-      session[:errorLink]  =  "/"
       redirect("/fail")
     elsif password != password_redo
       session[:errorMessage] = "matching the passwords"
-      session[:errorLink]  =  "/"
+      redirect("/fail")
+    elsif password.length < 8
+      session[:errorMessage] = "making a long enough password"
+      redirect("/fail")
+    elsif  password !=~ /[0-9]/
+      session[:errorMessage] = "putting numbers in your password"
       redirect("/fail")
     end
 }   
