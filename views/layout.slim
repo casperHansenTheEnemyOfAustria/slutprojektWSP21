@@ -10,16 +10,18 @@ html lang="en"
     h1 Welcome to sKoLaN
     nav 
       ul 
-        li
-          a href="/" Home
-        li
-          a href="/posts/index" Postboard 
-        li 
-          -if session[:loggedIn] == true
-            a  href="/users/index" Profilsida 
-        form action="/logOut" method="post"
-          -if session[:loggedIn] == true
-            input type="submit" value="Log Out"
+
+        - if session[:tooMany] != true
+          li
+            a href="/" Home
+          li
+            a href="/posts/index" Postboard 
+          li 
+            -if session[:loggedIn] == true
+              a  href="/users/index" Profilsida 
+          form action="/logOut" method="post"
+            -if session[:loggedIn] == true
+              input type="submit" value="Log Out"
         
 
 

@@ -5,24 +5,23 @@ require 'bcrypt'
 require 'rails'
 enable :sessions
 
+
 module Model
     # Grabs database info
     #
-    # @return [Database] the entire db
+    # @return [Database] the entire db as a global var
     def mkDb()
-        db = SQLite3::Database.new("db/skolan.db")
-        return db
+        $db = SQLite3::Database.new("db/skolan.db")
+        $db.results_as_hash = true
+        return $db
     end
-
-
     # Finds username from id
     #
     # @param [String] the id
     #
     # @return [String] Username
     def usernameFinder(id)
-        db = mkDb() 
-        return db.execute("SELECT name FROM users WHERE id = ?", id)[0][0]
+        return $db.execute("SELECT name FROM users WHERE id = ?", id)[0][0]
     end
 
     # Compares credentials
@@ -32,13 +31,9 @@ module Model
     #
     # @return [Boolean] if they match or not
     def loginFunc(username, password)
-        db = mkDb()
-        db.results_as_hash = true
-        usernames = db.execute("SELECT name FROM users ")
-        
-        
+        usernames = $db.execute("SELECT name FROM users ")
         if usernames.include?({"name" => username}) == true
-            info = db.execute("SELECT * FROM users where name = ?", username).first
+            info = $db.execute("SELECT * FROM users where name = ?", username).first
             password_digest = info["pwdigest"]
             if BCrypt::Password.new(password_digest) == password
                 return true
@@ -56,9 +51,7 @@ module Model
     #
     # @return [Boolean] if it is or not
     def admin(username)
-        db = mkDb()
-        db.results_as_hash = true
-        info = db.execute("SELECT * FROM users where name = ?", username).first
+        info = $db.execute("SELECT * FROM users where name = ?", username).first
         if info["admin?"] = 1
             return true
         else
@@ -73,9 +66,7 @@ module Model
     #
     # @return [String] id
     def getId(username)
-        db = mkDb()
-        db.results_as_hash = true
-        info = db.execute("SELECT * FROM users WHERE name = ?", username).first
+        info = $db.execute("SELECT * FROM users WHERE name = ?", username).first
         id = info["id"]
         return id
     end
@@ -87,17 +78,13 @@ module Model
     #
     # @return [Boolean]
     def newUser(username, password)
-        db = mkDb()
-        db.results_as_hash = true
-        usernames = db.execute("SELECT name FROM users ")
+        usernames = $db.execute("SELECT name FROM users ")
         
         
         if !usernames.include?({"name" => username}) 
             admins = ["1"]
             password_digest = BCrypt::Password.create(password)
-            db = mkDb()
-            db.results_as_hash = true
-            db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
+            $db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
             # if admins.include?(username)
             #     db.execute("INSERT INTO users (admin?) VALUES ('1')")
             # else
@@ -117,9 +104,8 @@ module Model
     # 
     # @return [Hash] all posts
     def allPosts()
-        db = mkDb()
-        db.results_as_hash = true 
-        return db.execute("SELECT * FROM POSTS")
+        
+        return $db.execute("SELECT * FROM POSTS")
     end
 
     # Checks all posts of one user
@@ -128,9 +114,7 @@ module Model
     #
     # @return [Hash] all posts
     def checkPosts(id)
-        db = mkDb()
-        db.results_as_hash = true
-        postsInfo = db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
+        postsInfo = $db.execute("SELECT * FROM posts WHERE owner_id = ?", id)
         return postsInfo 
     end
 
@@ -140,9 +124,7 @@ module Model
     #
     # @return [Hash] all posts
     def checkPost(id)
-        db = mkDb()
-        db.results_as_hash = true
-        postInfo = db.execute("SELECT * FROM posts WHERE id = ?", id)
+        postInfo = $db.execute("SELECT * FROM posts WHERE id = ?", id)
         p postInfo
         return postInfo
     end
@@ -154,9 +136,7 @@ module Model
     # @param [String] userId
     #
     def makePost(name, content, user_id)
-        db = mkDb()
-        db.results_as_hash = true
-        db.execute("INSERT INTO posts (name, content, owner_id) VALUES (?, ?, ?)", name,content, user_id).first
+        $db.execute("INSERT INTO posts (name, content, owner_id) VALUES (?, ?, ?)", name,content, user_id).first
     end
 
     # Deletes post
@@ -164,9 +144,7 @@ module Model
     # @param [String] id
     #
     def deletePost(id)
-        db = mkDb()
-        db.results_as_hash = true
-        db.execute("DELETE FROM posts WHERE id = ?", id)
+        $db.execute("DELETE FROM posts WHERE id = ?", id)
     end
 
     # Updates post
@@ -176,9 +154,7 @@ module Model
     # @param [String] text
     #
     def updatePost(id, title, text)
-        db = mkDb()
-        db.results_as_hash = true
-        db.execute("UPDATE posts SET name = ?, content = ? WHERE id = ?", title, text, id)
+        $db.execute("UPDATE posts SET name = ?, content = ? WHERE id = ?", title, text, id)
     end
 
     # Add a like to a post'
@@ -186,10 +162,9 @@ module Model
     # @param [String] userId 
     # @param [String] postId
     def likePost(userId, postId)
-        db = mkDb()
-        db.results_as_hash = true
+        # db = mkDb()
         p "#{userId} likes #{postId}"
-        db.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", userId, postId).first
+        $db.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", userId, postId).first
     end
 
     # Removes like from post
@@ -198,9 +173,7 @@ module Model
     # @param [String] postId
     #
     def unlikePost(userId, postId)
-        db = mkDb()
-        db.results_as_hash = true
-        db.execute("DELETE FROM likes WHERE post_id = ? AND user_id = ? ", postId, userId).first
+        $db.execute("DELETE FROM likes WHERE post_id = ? AND user_id = ? ", postId, userId).first
     end
 
     # Finds all posts liked by a user
@@ -210,8 +183,10 @@ module Model
     #
     # @return [Boolean]
     def findLikes(userId, postId)
+        # had to do this for non hash exeption
+        db  = SQLite3::Database.new("db/skolan.db")
+        db.results_as_hash = false
         postId = postId.to_i
-        db = mkDb()
         
         allLikes = db.execute("SELECT post_id FROM likes WHERE user_id = ?", userId)
         

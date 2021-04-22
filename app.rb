@@ -7,10 +7,8 @@ require 'rails'
 require 'byebug'
 require_relative("./model.rb")
 enable :sessions
-
 salt = "awoogamonke"
-
-
+attempts = 0
 
 include Model
 
@@ -19,6 +17,7 @@ include Model
 # Displays landing page
 #
 get("/"){
+    mkDb()
     session[:time] = ""
     session[:message] = ""
     if session[:loggedIn] == nil
@@ -29,7 +28,7 @@ get("/"){
     print "this is your ip adress #{request.ip}"
     slim(:index)
 }
-attempts = 0
+
 # Displays custom success messages
 #
 get("/success"){
@@ -78,10 +77,13 @@ post("/login"){
       session[:loggedIn] = false
       session[:errorMessage] = "Login"
       session[:errorLink]  =  "/"
+      # iterates login attempts
       attempts +=1
-      if attempts >= 10
+      # checks if attempts are over limit
+      if attempts >= 1
         p "too many attempt"
-        session[:errorMessage2] = "please wait 30"
+        session[:errorMessage2] = "please wait 30 seconds"
+        # too many is set as a check var for if too many login attempts have been made
         session[:tooMany] = true
       end
       redirect("/fail")
