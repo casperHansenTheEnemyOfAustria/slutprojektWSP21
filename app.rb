@@ -34,6 +34,12 @@ get("/"){
     slim(:index)
 }
 
+<<<<<<< Updated upstream
+=======
+# initiates login attempts
+attempts = 0
+
+>>>>>>> Stashed changes
 # Displays custom success messages
 #
 get("/success"){
@@ -75,7 +81,7 @@ post("/login"){
       end
       # Gets all the user posts and their info
       session[:postInfo] = checkPosts(session[:id])
-      redirect("users/index")
+      redirect("/users/")
           
     else
       # Makes sure it doesnt think youre logged in
@@ -86,9 +92,15 @@ post("/login"){
       attempts +=1
       # checks if attempts are over limit
       if attempts >= 10
+<<<<<<< Updated upstream
         p "too many attempt"
         session[:errorMessage2] = "please wait 30 seconds"
         # too many is set as a check var for if too many login attempts have been made
+=======
+        session[:errorMessage] = "Not making too many attempts"
+        p "too many attempts"
+        session[:errorMessage2] = "please wait 30 seconds"
+>>>>>>> Stashed changes
         session[:tooMany] = true
       end
       redirect("/fail")
@@ -154,7 +166,7 @@ post("/signup"){
 # User startpage
 #
 # @see Model#checkPosts
-get("/users/index"){
+get("/users/"){
   # sends all the posts of a suer to a session cookie and redirect them to the profile page
   session[:postInfo] = checkPosts(session[:id])
   slim(:"users/index")
@@ -179,22 +191,22 @@ get("/show/:user"){
 # @param [String] title
 # @param [String] content
 # @see Model#makePost
-post("/post/new"){
+post("/post/create"){
   name = params[:title]
   content = params[:content]
   user_id = session[:id]
   if name == "" 
     session[:errorMessage] = "naming"
-    session[:errorLink] = "/users/index"
+    session[:errorLink] = "/users/"
     redirect("/fail")
   end
   if content == ""
     session[:errorMessage] = "writing"
-    session[:errorLink] = "/users/index"
+    session[:errorLink] = "/users/"
     redirect("/fail")
   end
   makePost(name,content,user_id)
-  redirect("users/index")
+  redirect("users/")
 }
 
 # Deletes posts
@@ -255,7 +267,7 @@ post("/post/update"){
 # Homepage for viewing posts
 #
 # @see Model#allPosts
-get("/posts/index"){
+get("/posts/"){
   session[:allPosts] = allPosts()
   slim(:"posts/index")
 }

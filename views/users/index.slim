@@ -5,8 +5,8 @@ h1 Profile Page moment
     - if session[:admin]
         h4 Oh wow youre an admin
     h3 = "These are your posts"
-    - session[:redirectLink] = "/users/index"
-    - session[:errorLink] = "/users/index"
+    - session[:redirectLink] = "/users/"
+    - session[:errorLink] = "/users/"
     div class="userPosts"
         - if session[:postInfo] != nil
             - session[:postInfo].reverse_each do |post|
@@ -17,12 +17,12 @@ h1 Profile Page moment
                     form action="/post/#{post["id"]}/edit" method="get" 
                         input type="submit" value="EDIT THAT"
     div class="makePost"
-        form action="/post/new" method="post" 
+        form action="/post/create" method="post" 
             input type="text" name="title" placeholder="title here pwease"
             input type="text" name="content" placeholder="put sum text here"
             input type="submit" value="post it!"
 
 - else
-    h2 = "DIE"
+    h2 = "OOF you dont have any posts. Go make some"
 
  

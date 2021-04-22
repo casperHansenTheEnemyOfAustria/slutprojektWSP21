@@ -10,6 +10,7 @@ html lang="en"
     h1 Welcome to sKoLaN
     nav 
       ul 
+<<<<<<< Updated upstream
           / checks so too many login attempts havent been made
         - if session[:tooMany] != true
           li
@@ -22,6 +23,18 @@ html lang="en"
           form action="/logOut" method="post"
             -if session[:loggedIn] == true
               input type="submit" value="Log Out"
+=======
+        li
+          a href="/" Home
+        li
+          a href="/posts/" Postboard 
+        li 
+          -if session[:loggedIn] == true
+            a  href="/users/" Profilsida 
+        form action="/logOut" method="post"
+          -if session[:loggedIn] == true
+            input type="submit" value="Log Out"
+>>>>>>> Stashed changes
         
 
 

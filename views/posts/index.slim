@@ -1,8 +1,8 @@
 h2 THIS IS WHERE YOU CAN VIEW EVERYONES POSTS
 
 div class="userPosts"
-    - session[:redirectLink] = "/posts/index"
-    - session[:errorLink] = "/posts/index"
+    - session[:redirectLink] = "/posts/"
+    - session[:errorLink] = "/posts/"
     - if session[:allPosts] != nil
         - session[:allPosts].reverse_each do |post|
             div class="mainPost post"
@@ -15,7 +15,7 @@ div class="userPosts"
                         input type="submit" value="EDIT THAT"
                 - if session[:id] != post["owner_id"] 
                     - p 
-                    - if session[:loggedIn]
+                    - if session[:loggedIn] && session[:id] != post["owner_id"]
                         - if findLikes(session[:id], post["id"]) == false
                             form  action="/post/#{post["id"]}/like" method="post"
                                 input type="submit" value="I LIKE :)"
