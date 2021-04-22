@@ -2,6 +2,8 @@ h1 Profile Page moment
 
 - if session[:loggedIn] == true
     h2 = "Hello #{session[:username]}"
+    - if session[:admin]
+        h4 Oh wow youre an admin
     h3 = "These are your posts"
     - session[:redirectLink] = "/users/index"
     - session[:errorLink] = "/users/index"

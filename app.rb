@@ -80,7 +80,7 @@ post("/login"){
       # iterates login attempts
       attempts +=1
       # checks if attempts are over limit
-      if attempts >= 1
+      if attempts >= 10
         p "too many attempt"
         session[:errorMessage2] = "please wait 30 seconds"
         # too many is set as a check var for if too many login attempts have been made
@@ -111,23 +111,38 @@ post("/signup"){
     password = params[:password]
     password_redo = params[:password_redo]
     # checks for password redos
-    if password == password_redo 
+    if password == password_redo && password != "" && username != ""
       # password = password + salt adds salt
       if newUser(username, password)
         newUser(username, password)
         session[:successMessage] = "sign up"
+        # Sets the session username to the correct ones for further use
+        session[:username] = username
+        # Finds the id
+        session[:id] = getId(username)
+        # Makes sure the site knows youre logged in
+        session[:loggedIn] = true
         redirect("/success")
+
       else
         session[:errorMessage] = "making a unique username"
         session[:errorLink]  =  "/"
         redirect("/fail")
       end
-    else
+    elsif username == ""
+      session[:errorMessage] = "not leaving the username blank"
+      session[:errorLink]  =  "/"
+      redirect("/fail")
+    elsif password == ""
+      session[:errorMessage] = "not leaving the password blank"
+      session[:errorLink]  =  "/"
+      redirect("/fail")
+    elsif password != password_redo
       session[:errorMessage] = "matching the passwords"
       session[:errorLink]  =  "/"
       redirect("/fail")
     end
-}
+}   
 
 # user functions
 
