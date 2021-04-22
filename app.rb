@@ -36,6 +36,12 @@ get("/"){
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+# initiates login attempts
+attempts = 0
+
+>>>>>>> Stashed changes
 =======
 # initiates login attempts
 attempts = 0
@@ -100,9 +106,15 @@ post("/login"){
       if attempts >= 10
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         p "too many attempt"
         session[:errorMessage2] = "please wait 30 seconds"
         # too many is set as a check var for if too many login attempts have been made
+=======
+        session[:errorMessage] = "Not making too many attempts"
+        p "too many attempts"
+        session[:errorMessage2] = "please wait 30 seconds"
+>>>>>>> Stashed changes
 =======
         session[:errorMessage] = "Not making too many attempts"
         p "too many attempts"
