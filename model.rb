@@ -31,6 +31,7 @@ module Model
     #
     # @return [Boolean] if they match or not
     def loginFunc(username, password)
+        username = username.to_s    
         usernames = $db.execute("SELECT name FROM users ")
         if usernames.include?({"name" => username}) == true
             info = $db.execute("SELECT * FROM users where name = ?", username).first
@@ -40,8 +41,6 @@ module Model
             else
                 return false
             end
-        else 
-                return false
         end
     end
 
@@ -79,18 +78,10 @@ module Model
     # @return [Boolean]
     def newUser(username, password)
         usernames = $db.execute("SELECT name FROM users ")
-        
-        
         if !usernames.include?({"name" => username}) 
-            admins = ["1"]
             password_digest = BCrypt::Password.create(password)
-            $db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest)
-            # if admins.include?(username)
-            #     db.execute("INSERT INTO users (admin?) VALUES ('1')")
-            # else
-            #     db.execute("INSERT INTO users (admin?) VALUES ('0')")
-            # end
-            return true
+            $db.execute("INSERT INTO users (name, pwdigest) VALUES (?, ?)", username, password_digest).first
+           return true
         else
             return false
         end

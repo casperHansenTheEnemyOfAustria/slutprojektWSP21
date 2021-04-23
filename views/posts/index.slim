@@ -1,21 +1,21 @@
 h2 THIS IS WHERE YOU CAN VIEW EVERYONES POSTS
 
 div class="userPosts"
-    - session[:redirectLink] = "/posts/index"
-    - session[:errorLink] = "/posts/index"
-    - if session[:allPosts] != nil
+    - session[:redirectLink] = "/posts/"
+    - session[:errorLink] = "/posts/"
+    - if session[:allPosts] != nil &&  session[:loggedIn] == true
         - session[:allPosts].reverse_each do |post|
             div class="mainPost post"
                 h3 
                     a href='../show/#{usernameFinder(post["owner_id"])}' Owner:#{usernameFinder(post["owner_id"])}
                 h4 = "Title:#{post["name"]}"
                 p = "#{post["content"]}"
-                - if session[:id] == post["owner_id"] || session[:admin] == true
+                - if session[:id] == post["owner_id"] || session[:admin]
                     form action="/post/#{post["id"]}/edit" method="get" 
                         input type="submit" value="EDIT THAT"
                 - if session[:id] != post["owner_id"] 
                     - p 
-                    - if session[:loggedIn]
+                    - if session[:id] != post["owner_id"]
                         - if findLikes(session[:id], post["id"]) == false
                             form  action="/post/#{post["id"]}/like" method="post"
                                 input type="submit" value="I LIKE :)"

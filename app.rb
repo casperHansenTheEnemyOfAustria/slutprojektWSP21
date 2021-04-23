@@ -7,6 +7,7 @@ require 'rails'
 require 'byebug'
 require_relative("./model.rb")
 enable :sessions
+
 #password salt
 #
 salt = "awoogamonke"
@@ -34,6 +35,9 @@ get("/"){
     slim(:index)
 }
 
+
+
+
 # Displays custom success messages
 #
 get("/success"){
@@ -59,6 +63,7 @@ post("/login"){
     end
     username = params[:username]
     password = params[:password] + salt
+    p password
     p "running login function"
     if loginFunc(username, password)
       p "managed to log in "
@@ -72,10 +77,12 @@ post("/login"){
       # Checks for admin priviliges
       if admin(username)
         session[:admin] = true
+      else
+        session[:admin] == false
       end
       # Gets all the user posts and their info
       session[:postInfo] = checkPosts(session[:id])
-      redirect("users/index")
+      redirect("/users/")
           
     else
       # Makes sure it doesnt think youre logged in
@@ -86,9 +93,12 @@ post("/login"){
       attempts +=1
       # checks if attempts are over limit
       if attempts >= 10
+
         p "too many attempt"
         session[:errorMessage2] = "please wait 30 seconds"
         # too many is set as a check var for if too many login attempts have been made
+        session[:errorMessage] = "Not making too many attempts"
+        p "too many attempts"
         session[:tooMany] = true
       end
       redirect("/fail")
@@ -115,36 +125,34 @@ post("/signup"){
     username = params[:username]
     password = params[:password]
     password_redo = params[:password_redo]
+    session[:errorLink]  =  "/"
     # checks for password redos
-    if password == password_redo && password != "" && username != ""
-      # password = password + salt adds salt
+    if password == password_redo && password != "" && username != "" && password.length >= 8 && password =~ /[0-9]/
+      password = password + salt 
+      # adds salt
       if newUser(username, password)
-        newUser(username, password)
         session[:successMessage] = "sign up"
-        # Sets the session username to the correct ones for further use
-        session[:username] = username
-        # Finds the id
-        session[:id] = getId(username)
-        # Makes sure the site knows youre logged in
-        session[:loggedIn] = true
+        session[:redirectLink] = "/"
         redirect("/success")
 
       else
         session[:errorMessage] = "making a unique username"
-        session[:errorLink]  =  "/"
         redirect("/fail")
       end
     elsif username == ""
       session[:errorMessage] = "not leaving the username blank"
-      session[:errorLink]  =  "/"
       redirect("/fail")
     elsif password == ""
       session[:errorMessage] = "not leaving the password blank"
-      session[:errorLink]  =  "/"
       redirect("/fail")
     elsif password != password_redo
       session[:errorMessage] = "matching the passwords"
-      session[:errorLink]  =  "/"
+      redirect("/fail")
+    elsif password.length < 8
+      session[:errorMessage] = "making a long enough password"
+      redirect("/fail")
+    elsif  password !=~ /[0-9]/
+      session[:errorMessage] = "putting numbers in your password"
       redirect("/fail")
     end
 }   
@@ -154,7 +162,7 @@ post("/signup"){
 # User startpage
 #
 # @see Model#checkPosts
-get("/users/index"){
+get("/users/"){
   # sends all the posts of a suer to a session cookie and redirect them to the profile page
   session[:postInfo] = checkPosts(session[:id])
   slim(:"users/index")
@@ -179,22 +187,22 @@ get("/show/:user"){
 # @param [String] title
 # @param [String] content
 # @see Model#makePost
-post("/post/new"){
+post("/post/create"){
   name = params[:title]
   content = params[:content]
   user_id = session[:id]
   if name == "" 
     session[:errorMessage] = "naming"
-    session[:errorLink] = "/users/index"
+    session[:errorLink] = "/users/"
     redirect("/fail")
   end
   if content == ""
     session[:errorMessage] = "writing"
-    session[:errorLink] = "/users/index"
+    session[:errorLink] = "/users/"
     redirect("/fail")
   end
   makePost(name,content,user_id)
-  redirect("users/index")
+  redirect("users/")
 }
 
 # Deletes posts
@@ -255,7 +263,7 @@ post("/post/update"){
 # Homepage for viewing posts
 #
 # @see Model#allPosts
-get("/posts/index"){
+get("/posts/"){
   session[:allPosts] = allPosts()
   slim(:"posts/index")
 }
