@@ -78,7 +78,7 @@ post("/login"){
       if admin(username)
         session[:admin] = true
       else
-        session[:admin] == false
+        session[:admin] = false
       end
       # Gets all the user posts and their info
       session[:postInfo] = checkPosts(session[:id])
