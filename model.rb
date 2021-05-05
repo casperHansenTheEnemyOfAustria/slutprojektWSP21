@@ -135,7 +135,7 @@ module Model
     # @param [String] id
     #
     def deletePost(id)
-        if session[:id] == checkPost(id)["owner_id"] || session[:admin] == true
+        if session[:id] == checkPost(id)[0]["owner_id"] || session[:admin] == true
             $db.execute("DELETE FROM posts WHERE id = ?", id)
             return true
         else
