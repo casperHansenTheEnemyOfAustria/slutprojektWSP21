@@ -215,8 +215,13 @@ post("/post/create"){
 post("/post/:id/delete"){
   id = params[:id]
   session[:successMessage] = "delete a post"
-  deletePost(id)
-  redirect("/success")
+  if deletePost(id)
+    session[:successMessage] = "delete a post"
+    redirect("/success")
+  else
+    session[:errorMessage] = "being the post owner"
+    redirect("/fail")
+  end
 }
 
 # Edits posts

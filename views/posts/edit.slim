@@ -1,14 +1,14 @@
-h2 This is where edit thing you dingus
+h2 This is where edit thing you  dingus
 
 div class="post"
     h4 = "#{session[:currentName]}"
     p = "#{session[:currentContent]}"
-    
-    form action="/post/update" method="post" 
-        input type="text" name="newTitle" placeholder="New Name Please"
-        input type="text" name="newContent" placeholder="New Constent Please"
-        input type="submit" value="GO!!!"
+    - if checkPost(session[:postId])["owner_id"] == session[:id] || session[:admin] == true
+        form action="/post/update" method="post" 
+            input type="text" name="newTitle" placeholder="New Name Please"
+            input type="text" name="newContent" placeholder="New Constent Please"
+            input type="submit" value="GO!!!"
 
-    form action="/post/#{session[:postId]}/delete" method="post"
-                        input type="submit" value="DELETE THAT"
+        form action="/post/#{session[:postId]}/delete" method="post"
+                            input type="submit" value="DELETE THAT"
 
