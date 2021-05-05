@@ -51,7 +51,7 @@ module Model
     # @return [Boolean] if it is or not
     def admin(username)
         info = $db.execute("SELECT * FROM users where name = ?", username).first
-        if info["admin?"] = 1
+        if info["admin"] == 1
             return true
         else
             return false

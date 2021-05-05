@@ -23,6 +23,7 @@ include Model
 # Displays landing page
 #
 get("/"){
+    session[:errorMessage2] = nil
     mkDb()
     session[:time] = ""
     session[:message] = ""
@@ -60,6 +61,7 @@ post("/login"){
       p "reset attempts"
       attempts = 0 
       session[:tooMany] = nil
+      session[:errorMessage2] = nil
     end
     username = params[:username]
     password = params[:password] + salt
@@ -80,6 +82,7 @@ post("/login"){
       else
         session[:admin] = false
       end
+      p session[:admin]
       # Gets all the user posts and their info
       session[:postInfo] = checkPosts(session[:id])
       redirect("/users/")
