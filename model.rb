@@ -137,6 +137,7 @@ module Model
     def deletePost(id)
         if session[:id] == checkPost(id)[0]["owner_id"] || session[:admin] == true
             $db.execute("DELETE FROM posts WHERE id = ?", id)
+            $db.execute("DELETE FROM likes WHERE post_id = ?", id)
             return true
         else
             return false
